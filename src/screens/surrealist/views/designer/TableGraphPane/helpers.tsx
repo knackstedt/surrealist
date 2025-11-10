@@ -8,6 +8,7 @@ import {
 	type NodeTypes,
 	Rect,
 } from "@xyflow/react";
+import { elementToSVG, inlineResources } from "dom-to-svg";
 import { objectify } from "radash";
 import { getSurrealQL } from "~/screens/surrealist/connection/connection";
 import type {
@@ -56,6 +57,7 @@ export type GraphWarning = EdgeWarning | LinkWarning;
 export type SharedNodeData = {
 	table: TableInfo;
 	isSelected: boolean;
+	enableResizing: boolean;
 	direction: DiagramDirection;
 	mode: DiagramMode;
 };
@@ -87,6 +89,7 @@ export async function buildFlowNodes(
 	direction: DiagramDirection,
 	linkMode: DiagramLinks,
 	lineStyle: DiagramLineStyle,
+	enableResizing: boolean,
 ): Promise<[Node[], Edge[], GraphWarning[]]> {
 	const items = normalizeTables(tables);
 	const nodeIndex: Record<string, Node> = {};
@@ -114,10 +117,22 @@ export async function buildFlowNodes(
 		}
 	}
 
+	const fieldHeight = 18.59;
+	const fieldGap = 6;
+
+	// padding top + padding bottom + header gap + header height + header margin
+	const staticHeight = 12 + 12 + 9 + fieldHeight + 10;
+
 	// Define all nodes
 	for (const { table, variant } of items) {
 		const name = table.schema.name;
-		const node: any = {
+
+		const nodeHeight = nodeMode === "fields"
+			// field row height, plus the gaps between rows, plus static height.
+			? (Math.max(table.fields.length, 1) * fieldHeight) + ((Math.max(table.fields.length, 1) - 1) * fieldGap) + staticHeight
+			: undefined;
+
+		const node = {
 			id: name,
 			type: variant,
 			position: { x: 0, y: 0 },
@@ -125,9 +140,12 @@ export async function buildFlowNodes(
 			data: {
 				table,
 				isSelected: false,
+				enableResizing: enableResizing,
 				direction: direction,
 				mode: nodeMode,
 			} as SharedNodeData,
+			height: nodeHeight,
+			width: nodeMode === "fields" ? 250 : undefined
 		};
 
 		nodes.push(node);
@@ -349,7 +367,6 @@ export async function applyNodeLayout(
 	return [nodeChanges, edgeChanges];
 }
 
-import { elementToSVG, inlineResources } from "dom-to-svg";
 
 /**
  * Create a snapshot of the given element
@@ -413,6 +430,6 @@ export async function createSnapshot(el: HTMLElement, type: "png" | "svg", nodes
 /**
  * Apply a default value if the given value is "default"
  */
-export function applyDefault<T extends string>(value: T | undefined, fallback: T) {
+export function applyDefault<T extends string | boolean>(value: T | undefined, fallback: T): T {
 	return !value || value === "default" ? fallback : value;
 }

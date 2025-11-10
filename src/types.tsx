@@ -153,6 +153,7 @@ export interface Connection {
 	diagramLineStyle: DiagramLineStyle;
 	diagramLinkMode: DiagramLinks;
 	diagramHoverFocus: DiagramHoverFocus;
+	diagramResizableNodes: boolean;
 	diagramMode: DiagramMode;
 	designerTableList: boolean;
 	explorerTableList: boolean;
@@ -208,6 +209,7 @@ export interface SurrealistAppearanceSettings {
 	defaultDiagramDirection: DiagramDirection;
 	defaultDiagramLineStyle: DiagramLineStyle;
 	defaultDiagramLinkMode: DiagramLinks;
+	defaultDiagramResizableNodes: boolean;
 	defaultDiagramMode: DiagramMode;
 	defaultDiagramHoverFocus: DiagramHoverFocus;
 	sidebarMode: SidebarMode;

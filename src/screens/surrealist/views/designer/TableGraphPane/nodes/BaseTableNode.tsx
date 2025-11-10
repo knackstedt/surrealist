@@ -1,5 +1,5 @@
 import { Box, Divider, Flex, Group, Paper, ScrollArea, Stack, Text, Tooltip } from "@mantine/core";
-import { Handle, Position } from "@xyflow/react";
+import { Handle, NodeResizer, Position } from "@xyflow/react";
 import { type MouseEvent, type ReactNode, useEffect, useRef, useState } from "react";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
@@ -132,11 +132,11 @@ function Fields(props: FieldsProps) {
 	return (
 		<Box
 			display="flex"
+			mah={'100%'}
 			style={{ cursor: "pointer" }}
 		>
 			<ScrollArea
 				flex={1}
-				mah={210}
 				onClickCapture={onClick}
 				onWheelCapture={ON_STOP_PROPAGATION}
 				onMouseDownCapture={ON_STOP_PROPAGATION}
@@ -179,10 +179,11 @@ interface BaseTableNodeProps {
 	direction: DiagramDirection;
 	mode: DiagramMode;
 	isSelected: boolean;
+	enableResizing: boolean;
 	isEdge?: boolean;
 }
 
-export function BaseTableNode({ table, direction, mode, isSelected, isEdge }: BaseTableNodeProps) {
+export function BaseTableNode({ table, direction, mode, enableResizing, isSelected, isEdge }: BaseTableNodeProps) {
 	const isLight = useIsLight();
 	const isLTR = direction === "ltr";
 	const showMore = mode === "summary" || (mode === "fields" && table.fields.length > 0);
@@ -221,6 +222,12 @@ export function BaseTableNode({ table, direction, mode, isSelected, isEdge }: Ba
 
 	return (
 		<>
+			{enableResizing && mode === 'fields' &&
+				<NodeResizer
+					minWidth={200}
+					minHeight={100}
+				/>
+			}
 			<Handle
 				type="target"
 				position={isLTR ? Position.Left : Position.Right}
@@ -239,13 +246,14 @@ export function BaseTableNode({ table, direction, mode, isSelected, isEdge }: Ba
 
 			<Paper
 				p="md"
-				w={250}
 				title={`Click to edit ${table.schema.name}`}
 				bg={isLight ? "white" : "slate.7"}
 				shadow={`0 8px 12px rgba(0, 0, 0, ${isLight ? 0.075 : 0.2})`}
 				style={{
 					border: `1px solid ${themeColor(isSelected ? "surreal" : isLight ? "slate.2" : "slate.5")}`,
 					userSelect: "none",
+					overflow: "hidden",
+					height: '100%',
 				}}
 			>
 				<Group
@@ -300,10 +308,18 @@ export function BaseTableNode({ table, direction, mode, isSelected, isEdge }: Ba
 						/>
 
 						{mode === "fields" ? (
-							<Fields
-								isLight={isLight}
-								table={table}
-							/>
+							(table.fields.length > 0)
+								?
+								<Fields
+									isLight={isLight}
+									table={table}
+								/>
+								: <Text
+									c={isLight ? "slate.6" : "slate.4"}
+									mt={10}
+								>
+									No fields defined.
+								</Text>
 						) : (
 							<Stack
 								gap="xs"

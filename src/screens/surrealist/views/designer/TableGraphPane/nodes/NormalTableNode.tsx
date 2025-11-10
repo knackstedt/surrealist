@@ -11,6 +11,7 @@ export function NormalTableNode({ data }: NodeProps<NormalTableNode>) {
 			mode={data.mode}
 			direction={data.direction}
 			isSelected={data.isSelected}
+			enableResizing={data.enableResizing}
 		/>
 	);
 }

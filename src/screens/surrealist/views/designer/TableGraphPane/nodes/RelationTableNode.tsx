@@ -11,6 +11,7 @@ export function RelationTableNode({ data }: NodeProps<RelationTableNode>) {
 			mode={data.mode}
 			direction={data.direction}
 			isSelected={data.isSelected}
+			enableResizing={data.enableResizing}
 			isEdge
 		/>
 	);

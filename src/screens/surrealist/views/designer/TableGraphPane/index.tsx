@@ -2,6 +2,8 @@ import {
 	Badge,
 	Box,
 	Button,
+	Checkbox,
+	CheckboxProps,
 	Group,
 	HoverCard,
 	Loader,
@@ -90,7 +92,6 @@ import {
 	type GraphWarning,
 	NODE_TYPES,
 } from "./helpers";
-
 import classes from "./style.module.scss";
 
 export interface TableGraphPaneProps {
@@ -117,6 +118,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 		diagramLinkMode,
 		diagramMode,
 		diagramHoverFocus,
+		diagramResizableNodes,
 	] = useConnection((c) => [
 		c?.id ?? "",
 		c?.designerTableList,
@@ -126,6 +128,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 		c?.diagramLinkMode,
 		c?.diagramMode,
 		c?.diagramHoverFocus,
+		c?.diagramResizableNodes,
 	]);
 
 	const [isExporting, setIsExporting] = useState(false);
@@ -151,6 +154,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	const [defaultLinkMode] = useSetting("appearance", "defaultDiagramLinkMode");
 	const [defaultNodeMode] = useSetting("appearance", "defaultDiagramMode");
 	const [defaultHoverFocus] = useSetting("appearance", "defaultDiagramHoverFocus");
+	const [defaultResizableNodes] = useSetting("appearance", "defaultDiagramResizableNodes");
 
 	const algorithm = applyDefault(diagramAlgorithm, defaultAlgorithm);
 	const direction = applyDefault(diagramDirection, defaultDirection);
@@ -158,6 +162,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	const linkMode = applyDefault(diagramLinkMode, defaultLinkMode);
 	const nodeMode = applyDefault(diagramMode, defaultNodeMode);
 	const hoverFocus = applyDefault(diagramHoverFocus, defaultHoverFocus);
+	const resizableNodes = applyDefault(diagramResizableNodes, defaultResizableNodes);
 
 	useLayoutEffect(() => {
 		if (isLayedOut.current || !nodesInitialized) {
@@ -184,6 +189,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 			direction,
 			linkMode,
 			lineStyle,
+			resizableNodes
 		);
 
 		setWarnings(warnings);
@@ -335,6 +341,13 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 		updateConnection({
 			id: connectionId,
 			diagramHoverFocus: mode as DiagramHoverFocus,
+		});
+	});
+
+	const setDiagramResizableNodes = useStable((mode: boolean) => {
+		updateConnection({
+			id: connectionId,
+			diagramResizableNodes: mode,
 		});
 	});
 
@@ -646,9 +659,14 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 									onChange={setDiagramHoverFocus as any}
 									comboboxProps={{ withinPortal: false }}
 								/>
+								<Label>Resizable Nodes</Label>
+								<Checkbox
+									value={resizableNodes ? "true" : "false"}
+									onChange={setDiagramResizableNodes as any}
+								/>
 							</SimpleGrid>
 							<Text fz="sm">
-								You can customise default values in the settings menu
+								You can customize default values in the settings menu
 							</Text>
 						</Popover.Dropdown>
 					</Popover>

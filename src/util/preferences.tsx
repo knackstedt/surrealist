@@ -480,6 +480,17 @@ export function useComputedPreferences(): PreferenceSection[] {
 						}),
 					},
 					{
+						id: "default-node-resizing",
+						name: "Default node resizing",
+						description: "The default diagram node resizing behavior",
+						controller: new CheckboxController({
+							reader: (config) => config.settings.appearance.defaultDiagramResizableNodes,
+							writer: (config, value) => {
+								config.settings.appearance.defaultDiagramResizableNodes = value;
+							},
+						}),
+					},
+					{
 						id: "default-layout-direction",
 						name: "Default layout direction",
 						description: "The default diagram direction",

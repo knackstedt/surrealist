@@ -11,6 +11,7 @@ export function ViewTableNode({ data }: NodeProps<ViewTableNode>) {
 			mode={data.mode}
 			direction={data.direction}
 			isSelected={data.isSelected}
+			enableResizing={data.enableResizing}
 		/>
 	);
 }
