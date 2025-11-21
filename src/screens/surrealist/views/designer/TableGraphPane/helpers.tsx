@@ -21,7 +21,6 @@ import type {
 	TableVariant,
 } from "~/types";
 import { extractEdgeRecords, getTableVariant } from "~/util/schema";
-import { ElkStepEdge } from "./edges/ElkEdge";
 import { NormalTableNode } from "./nodes/NormalTableNode";
 import { RelationTableNode } from "./nodes/RelationTableNode";
 import { ViewTableNode } from "./nodes/ViewTableNode";
@@ -48,7 +47,6 @@ export const NODE_TYPES: NodeTypes = {
 };
 
 export const EDGE_TYPES: EdgeTypes = {
-	elk: ElkStepEdge,
 };
 
 export type InternalNode = Node & { width: number; height: number };
@@ -97,13 +95,13 @@ export async function buildFlowNodes(
 	const nodes: Node[] = [];
 
 	// Base edge options
-	const baseEdge: any = {
+	const baseEdge: Partial<Edge> & Record<string, any> = {
 		deletable: false,
 	};
 
 	switch (lineStyle) {
 		case "metro": {
-			baseEdge.type = "elk";
+			baseEdge.type = "smoothstep";
 			baseEdge.pathOptions = { borderRadius: 50 };
 			break;
 		}
@@ -327,7 +325,7 @@ export async function applyNodeLayout(
 	const layout = await elk.layout(graph, {
 		layoutOptions: {
 			"elk.algorithm": algorithm === "spaced" ? "force" : "layered",
-			"elk.layered.spacing.nodeNodeBetweenLayers": "100",
+			"elk.layered.spacing.nodeNodeBetweenLayers": "140",
 			"elk.spacing.nodeNode": "80",
 			"elk.direction": direction === "ltr" ? "RIGHT" : "LEFT",
 		},
